@@ -44,9 +44,12 @@ const Sidebar = ({ open, onClose }) => {
   const translations = {
     // keys are taken from routes.js::routes[].key
     [routeKeys.HOME]: useT('Home page'),
+    [routeKeys.DRIVE]: useT('Add new drive'),
     [routeKeys.LOGIN]: useT('Log in'),
     [routeKeys.LOGOUT]: useT('Log out'),
   };
+
+  console.log(translations)
 
   return (
     <Drawer anchor="right" open={open} onClose={onClose} classes={{paper: classes.root}}>

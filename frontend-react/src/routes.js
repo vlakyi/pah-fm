@@ -40,11 +40,11 @@ export const renderRoutes = (routes = []) => (
 
 const routeKeys = {
   HOME: 'home',
+  DRIVE: 'drive',
   LOGIN: 'login',
   LOGOUT: 'logout',
   NOTFOUND: 'notfound',
   DEFAULT: 'default',
-  DRIVE: 'drive'
 }
 
 const routes = [
@@ -53,6 +53,12 @@ const routes = [
     path: '/',
     key: routeKeys.HOME,
     component: lazy(() => import('./views/Home'))
+  },
+  {
+    exact: true,
+    path: '/drive',
+    key: routeKeys.DRIVE,
+    component: lazy(() => import('./views/Drive'))
   },
   {
     exact: true,
@@ -70,11 +76,6 @@ const routes = [
     path: '/404',
     key: routeKeys.NOTFOUND,
     component: lazy(() => import('./views/NotFound'))
-  },
-  {
-    path: '/drive',
-    key: routeKeys.DRIVE,
-    component: lazy(() => import('./views/Drive'))
   },
   {
     path: '*',
