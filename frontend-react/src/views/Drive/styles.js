@@ -16,7 +16,7 @@ export const useStyles = makeStyles(({ palette }) => ({
     flexDirection: 'column',
     background: palette.background.grayLight,
     padding: '4rem 2rem',
-    margin: '0.5rem',
+    margin: '0.5rem auto',
     borderRadius: '0.3rem',
   },
   formContainer: {
