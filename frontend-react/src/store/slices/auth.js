@@ -73,7 +73,10 @@ const authSlice = createSlice({
     });
     builder.addCase(getMe.fulfilled, (state, { payload }) => {
       state.isFetching = false;
-      state.user = payload;
+      // remove id from the payload
+      let user = payload;
+      delete user.id;
+      state.user = user;
     });
     builder.addCase(getMe.rejected, (state, { payload }) => {
       state.isFetching = false;
