@@ -70,7 +70,7 @@ const routes = [
     exact: true,
     path: '/logout',
     key: routeKeys.LOGOUT,
-    component: <Redirect to="/404" />
+    component: () => <Redirect to="/" />
   },
   {
     path: '/404',

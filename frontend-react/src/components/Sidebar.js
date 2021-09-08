@@ -1,6 +1,11 @@
-import React  from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import {Link} from 'react-router-dom'
+
+import { useDispatch, useSelector } from 'react-redux';
+import { isAuthenticatedSelector } from '../store/selectors/auth';
+import { logout } from '../store/slices/auth';
+
+import { Link } from 'react-router-dom';
 
 import {
   Divider,
@@ -8,14 +13,15 @@ import {
   Grid,
   List,
   ListItem,
-  ListItemText
+  ListItemText,
 } from '@material-ui/core';
-import {makeStyles} from "@material-ui/styles";
+
+import { makeStyles } from '@material-ui/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 
 import LanguagePicker from './LanguagePicker';
-import routes, {routeKeys} from '../routes';
+import routes, { routeKeys } from '../routes';
 import useT from '../utils/translation';
 import logo from '../assets/logo_codeforpoznan.svg';
 
@@ -41,34 +47,69 @@ const useStyles = makeStyles((theme) => ({
 
 const Sidebar = ({ open, onClose }) => {
   const classes = useStyles();
+  const { HOME, DRIVE, LOGIN, LOGOUT } = routeKeys;
+
   const translations = {
     // keys are taken from routes.js::routes[].key
-    [routeKeys.HOME]: useT('Home page'),
-    [routeKeys.DRIVE]: useT('Add new drive'),
-    [routeKeys.LOGIN]: useT('Log in'),
-    [routeKeys.LOGOUT]: useT('Log out'),
+    [HOME]: useT('Home page'),
+    [DRIVE]: useT('Add new drive'),
+    [LOGIN]: useT('Log in'),
+    [LOGOUT]: useT('Log out'),
   };
 
-  console.log(translations)
+  const dispatch = useDispatch();
+  const isAuthenticated = useSelector(isAuthenticatedSelector);
+
+  // rout validation for authenticated and non authenticated users
+  const isValidAuthGate = (routeKey) =>
+    (!isAuthenticated && [LOGIN, HOME].includes(routeKey)) ||
+    (isAuthenticated && [LOGOUT, HOME, DRIVE].includes(routeKey));
+
+  const logoutOnLinkClick = (key) => {
+    if (key === LOGOUT) {
+      dispatch(logout());
+    }
+  };
 
   return (
-    <Drawer anchor="right" open={open} onClose={onClose} classes={{paper: classes.root}}>
+    <Drawer
+      anchor="right"
+      open={open}
+      onClose={onClose}
+      classes={{ paper: classes.root }}
+    >
       <Grid container wrap="nowrap" direction="column">
         <Grid container wrap="nowrap" justify="flex-end">
-          <IconButton color="primary" component="button" className={classes.close} onClick={onClose}>
+          <IconButton
+            color="primary"
+            component="button"
+            className={classes.close}
+            onClick={onClose}
+          >
             <CloseIcon fontSize="large" />
           </IconButton>
         </Grid>
         <List>
-          {routes.filter(r => r.exact).map(r =>
-            <Link key={r.key} to={r.path} className={classes.link}>
-              <ListItem>
-                <ListItemText>
-                  {translations[r.key]}
-                </ListItemText>
-              </ListItem>
-            </Link>
-          )}
+          {routes
+            .filter((r) => r.exact)
+            .map(({ key, path }) => {
+              // add auth gate validation
+              if (isValidAuthGate(key)) {
+                return (
+                  <Link
+                    key={key}
+                    to={path}
+                    className={classes.link}
+                    onClick={() => logoutOnLinkClick(key)}
+                  >
+                    <ListItem>
+                      <ListItemText>{translations[key]}</ListItemText>
+                    </ListItem>
+                  </Link>
+                );
+              }
+              return null;
+            })}
         </List>
         <Divider />
         <LanguagePicker />
@@ -89,4 +130,3 @@ Sidebar.propTypes = {
 };
 
 export default Sidebar;
-
