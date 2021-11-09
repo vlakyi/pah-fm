@@ -12,7 +12,19 @@ import {
   Typography,
 } from '@material-ui/core';
 
+// redux
+import {initialState, updateNewDrive, resetNewDrive} from '../../store/slices/newDrive';
+import { useDispatch, useSelector } from 'react-redux';
+import {getNewDrive} from '../../store/selectors/newDrive';
+
+// router
+import { useHistory } from "react-router-dom";
+import {routeKeys} from '../../routes';
+
+// translations
 import useT from '../../utils/translation';
+
+// form validation
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
@@ -20,8 +32,11 @@ import * as yup from 'yup';
 import { useStyles, WhiteBox, ButtonsContainer } from './styles';
 
 const DriveView = () => {
-  // local state
+  const history = useHistory();
   const [traveled, setTraveled] = useState(0);
+
+  const newDriveState = useSelector(getNewDrive); 
+  const dispatch = useDispatch();
 
   // Translated labels
   const title = useT('Add new drive');
@@ -54,23 +69,19 @@ const DriveView = () => {
   });
 
   const formik = useFormik({
-    initialValues: {
-      date: new Date().toISOString().split('T')[0],
-      startLocation: '',
-      mileageStart: 0,
-      project: '',
-      car: '',
-      passenger: '',
-      description: '',
-      endLocation: '',
-      mileageEnd: 0,
-    },
+    initialValues: newDriveState,
     validateOnChange: false,
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+      dispatch(updateNewDrive(values));
+      history.push(`/${routeKeys.VERIFY}`);
     },
   });
+
+  const onFormReset = () => {
+    formik.resetForm({values: initialState});
+    dispatch(resetNewDrive());
+  }
 
   useEffect(() => {
     const { mileageStart, mileageEnd } = formik.values;
@@ -79,7 +90,8 @@ const DriveView = () => {
     if (mileage !== traveled && mileage >= 0) {
       setTraveled(mileage);
     }
-  }, [formik.values, traveled]);
+
+  }, [formik.values, traveled, dispatch]);
 
   // values to generate MenuItems in select fields. Will be converted to redux slice.
   const selectItems = {
@@ -198,7 +210,7 @@ const DriveView = () => {
             <Button type="submit" variant="contained" color="primary">
               {submit}
             </Button>
-            <Button variant="contained" onClick={formik.resetForm}>
+            <Button variant="contained" onClick={onFormReset}>
               {reset}
             </Button>
           </ButtonsContainer>
