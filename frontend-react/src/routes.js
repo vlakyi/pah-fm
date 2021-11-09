@@ -45,6 +45,7 @@ const routeKeys = {
   LOGOUT: 'logout',
   NOTFOUND: 'notfound',
   DEFAULT: 'default',
+  VERIFY: 'verify' 
 }
 
 const routes = [
@@ -71,6 +72,12 @@ const routes = [
     path: '/logout',
     key: routeKeys.LOGOUT,
     component: () => <Redirect to="/" />
+  },
+  {
+    exact: false,
+    path: '/verify',
+    key: routeKeys.VERIFY,
+    component: lazy(() => import('./views/DriveVerify'))
   },
   {
     path: '/404',
